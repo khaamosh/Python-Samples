@@ -1,0 +1,57 @@
+import com.microsoft.azure.storage.blob.*;
+import com.microsoft.azure.storage.core.Base64;
+
+
+import java.io.*;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.microsoft.azure.storage.CloudStorageAccount;
+import com.microsoft.azure.storage.StorageException;
+
+public class testupload {
+
+       public static void main(String[] args) throws InvalidKeyException {
+
+             
+              try {
+                   CloudStorageAccount storageAccount = CloudStorageAccount.parse("storage-account connection string");
+                          CloudBlobClient blobClient = storageAccount.createCloudBlobClient(); 
+                          
+                     CloudBlobContainer container = blobClient.getContainerReference("test");
+                     String fileKey = "testFile.txt";
+                     CloudBlockBlob blockBlob = container.getBlockBlobReference(fileKey);
+                     
+                     java.io.FileInputStream fis =  
+                                  new java.io.FileInputStream("C:\\Users\\diverm\\Desktop\\testFile.txt");
+                     
+                     String blockIdEncoded = Base64.encode(fileKey.getBytes());
+                     
+                     blockBlob.uploadBlock(blockIdEncoded, fis, -1);
+                     
+                     
+                     //List<BlockEntry> blockList = new ArrayList<BlockEntry>();
+  blockBlob.downloadBlockList();
+                     
+                     if(!blockList.stream().anyMatch(blockEntry -> blockEntry.getId().equals(blockIdEncoded))) {
+                         blockList.clear();
+// there was only one block id hence we had to clear the blocklist and add it, else one can first compare the lists and append the new additions(in an iterative fashion).
+                         blockList.add(new BlockEntry(blockIdEncoded));
+                     } 
+                     
+                     blockBlob.commitBlockList(blockList);
+                     
+              } catch (URISyntaxException | StorageException e) {
+                     e.printStackTrace();
+              } catch (FileNotFoundException e) {
+                     e.printStackTrace();
+              } catch (IOException e) {
+                     e.printStackTrace();
+              }
+
+       }
+
+}
+
